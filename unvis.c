@@ -35,6 +35,7 @@
 #include <sys/types.h>
 #include <ctype.h>
 
+#include "portable.h"
 #include "vis.h"
 
 /*

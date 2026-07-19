@@ -18,7 +18,9 @@
 #include <stdlib.h>
 #endif /* __linux__ || __CYGWIN__ || __midipix__ */
 
+#ifndef __sortix__
 #include <sys/param.h>
+#endif
 #include <sys/time.h>
 #include <stdint.h>
 
@@ -47,6 +49,10 @@
 #define CHILD_MAX	80
 #endif /* !CHILD_MAX */
 
+#ifndef PATH_MAX
+#define PATH_MAX	4096
+#endif /* !PATH_MAX */
+
 #ifndef O_EXLOCK
 #define O_EXLOCK	0
 #endif /* !O_EXLOCK */
@@ -64,7 +70,9 @@
 #endif /* !_PATH_STDPATH */
 
 #ifndef _PW_NAME_LEN
-#if defined(__linux__) || defined(__CYGWIN__) || defined(_AIX) || defined(__midipix__) || defined(__HAIKU__) || defined(__QNXNTO__)
+#if defined(__sortix__)
+#define _PW_NAME_LEN	LOGIN_NAME_MAX
+#elif defined(__linux__) || defined(__CYGWIN__) || defined(_AIX) || defined(__midipix__) || defined(__HAIKU__) || defined(__QNXNTO__)
 #define _PW_NAME_LEN	LOGIN_NAME_MAX
 #elif defined(__NetBSD__)
 #define _PW_NAME_LEN	MAXLOGNAME
@@ -74,8 +82,23 @@
 #define _PW_NAME_LEN	8
 #else
 #define _PW_NAME_LEN	MAXLOGNAME - 1
-#endif /* __linux__ || __CYGWIN__ || _AIX || __NetBSD__ || __sun || __midipix__ || __HAIKU__ || __QNXNTO__ */
+#endif /* __sortix__ || __linux__ || __CYGWIN__ || _AIX || __NetBSD__ || __sun || __midipix__ || __HAIKU__ || __QNXNTO__ */
 #endif /* !_PW_NAME_LEN */
+
+#ifdef __sortix__
+typedef unsigned char u_char;
+typedef unsigned short u_short;
+typedef unsigned int u_int;
+typedef unsigned long u_long;
+/* Sortix does not expose LOGIN_NAME_MAX directly */
+#ifndef LOGIN_NAME_MAX
+#define LOGIN_NAME_MAX	_POSIX_LOGIN_NAME_MAX
+#endif
+/* Sortix has no flock(); stub it as a no-op (history locking is non-critical) */
+#define flock(fd, op)	0
+/* Sortix nice() is not yet implemented; stub as no-op */
+#define nice(x)		0
+#endif /* __sortix__ */
 
 #ifndef LOCK_EX
 #define LOCK_EX	0x02
@@ -85,17 +108,17 @@
 #define LOCK_UN	0x08
 #endif /* !LOCK_UN */
 
-#ifndef RLIMIT_RSS
+#if !defined(__sortix__) && !defined(RLIMIT_RSS)
 #define	RLIMIT_RSS	5		/* resident set size */
-#endif /* !RLIMIT_RSS */
+#endif /* !__sortix__ && !RLIMIT_RSS */
 
-#ifndef RLIMIT_MEMLOCK
+#if !defined(__sortix__) && !defined(RLIMIT_MEMLOCK)
 #define	RLIMIT_MEMLOCK	6		/* locked-in-memory address space */
-#endif /* !RLIMIT_MEMLOCK */
+#endif /* !__sortix__ && !RLIMIT_MEMLOCK */
 
-#ifndef RLIMIT_NPROC
+#if !defined(__sortix__) && !defined(RLIMIT_NPROC)
 #define	RLIMIT_NPROC	7		/* number of processes */
-#endif /* !RLIMIT_NPROC */
+#endif /* !__sortix__ && !RLIMIT_NPROC */
 
 /* Convert clock_gettime() to clock_get_time() on Max OS X < 10.12 */
 #if defined(__APPLE__) && defined(__MACH__) && __MAC_OS_X_VERSION_MIN_REQUIRED < 101200

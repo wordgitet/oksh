@@ -1747,7 +1747,7 @@ do_clear_screen(void)
 {
 	int neednl = 1;
 
-#ifndef SMALL
+#if !defined(SMALL) && !defined(NO_CURSES)
 	if (cur_term == NULL && Flag(FTALKING))
 		initcurses();
 	if (cur_term != NULL && clear_screen != NULL) {

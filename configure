@@ -451,6 +451,21 @@ EOF
   fi
 }
 
+pathscheck() {
+  cat << EOF > conftest.c
+#include <paths.h>
+int main(void){return 0;}
+EOF
+  $cc $cflags -o conftest.o -c conftest.c > /dev/null 2>&1
+  if [ $? -eq 0 ] ; then
+    rm -f conftest.o conftest.c
+    return 0
+  else
+    rm -f conftest.o conftest.c
+    return 1
+  fi
+}
+
 pledgecheck() {
   cat << EOF > conftest.c
 #include <unistd.h>
@@ -1095,6 +1110,10 @@ case "x$os" in
     cflags="$cflags -D_ALL_SOURCE"
     ldflags="-lbsd"
     ;;
+  "xSortix")
+    # Sortix is POSIX-compatible; no special flags needed.
+    # configure's compile-time probes handle feature detection automatically.
+    ;;
   "xDarwin")
     if [ $xlc -eq 1 ] ; then
       echo "warning: Detected xlc on Darwin."
@@ -1257,6 +1276,15 @@ else
   else
     echo "no"
   fi
+fi
+
+printf "checking for paths.h... "
+pathscheck
+if [ $? -eq 0 ] ; then
+  echo "#define HAVE_PATHS_H" >> pconfig.h
+  echo "yes"
+else
+  echo "no"
 fi
 
 printf "checking for pledge... "

@@ -1239,7 +1239,7 @@ set_array(const char *var, int reset, char **vals)
 	}
 }
 
-#ifndef SMALL
+#if !defined(SMALL) && !defined(NO_CURSES)
 void
 initcurses(void)
 {
@@ -1252,4 +1252,4 @@ initcurses(void)
 			del_curterm(cur_term);
 	}
 }
-#endif /* SMALL */
+#endif /* !SMALL && !NO_CURSES */

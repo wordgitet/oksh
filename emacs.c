@@ -1040,7 +1040,7 @@ x_redraw(int limit)
 	x_adj_ok = 0;
 	if (limit == -2) {
 		int cleared = 0;
-#ifndef SMALL
+#if !defined(SMALL) && !defined(NO_CURSES)
 		if (cur_term == NULL && Flag(FTALKING))
 			initcurses();
 		if (cur_term != NULL && clear_screen != NULL) {

@@ -602,5 +602,7 @@ void	change_random(void);
 int	array_ref_len(const char *);
 char *	arrayname(const char *);
 void    set_array(const char *, int, char **);
+#if !defined(SMALL) && !defined(NO_CURSES)
 void	initcurses(void);
+#endif
 /* vi.c: see edit.h */

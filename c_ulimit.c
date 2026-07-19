@@ -50,13 +50,25 @@ c_ulimit(char **wp)
 		{ "coredump(blocks)", RLIMIT_CORE, 512, 'c' },
 		{ "data(kbytes)", RLIMIT_DATA, 1024, 'd' },
 		{ "stack(kbytes)", RLIMIT_STACK, 1024, 's' },
+#ifndef __sortix__
 		{ "lockedmem(kbytes)", RLIMIT_MEMLOCK, 1024, 'l' },
 		{ "memory(kbytes)", RLIMIT_RSS, 1024, 'm' },
+#endif
 		{ "nofiles(descriptors)", RLIMIT_NOFILE, 1, 'n' },
+#ifndef __sortix__
 		{ "processes", RLIMIT_NPROC, 1, 'p' },
+#endif
 		{ NULL }
 	};
-	const char	*options = "HSat#f#c#d#s#l#m#n#p#";
+	const char	*options = "HSat#f#c#d#s#"
+#ifndef __sortix__
+	    "l#m#"
+#endif
+	    "n#"
+#ifndef __sortix__
+	    "p#"
+#endif
+	    ;
 	int		how = SOFT | HARD;
 	const struct limits	*l;
 	int		optc, all = 0;
